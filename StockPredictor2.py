@@ -19,6 +19,17 @@ webDriverPath = '/Users/Jferlic/Desktop/ChromeDriver/chromedriver'
 websiteForDataScraping = 'https://finance.yahoo.com/gainers'
 timeToSell = 16
 
+#Create a new file that will hold data
+file = open("stocks.txt","w+")
+
+file.write("value1")
+file.write("\n")
+file.write("value2")
+
+file.close()
+
+time.sleep(60)
+
 ts = TimeSeries(key=alphaVantageKey, output_format='pandas')
 ti = TechIndicators(key=alphaVantageKey, output_format='pandas')
 
