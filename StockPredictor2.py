@@ -12,8 +12,8 @@ from TestTradingAlgo import isFibSmaOk
 from TestTradingAlgo import isRsiOk
 
 alphaVantageKey = 'Q4A5RYR91VTSMIGK'
-beginningMoney = 1000
-totalMoney = 1000
+beginningMoney = 10000
+totalMoney = 10000
 totalMoneyinStocks = 0
 webDriverPath = '/Users/Jferlic/Desktop/ChromeDriver/chromedriver'
 websiteForDataScraping = 'https://finance.yahoo.com/gainers'
@@ -114,34 +114,37 @@ if len(stocksToBuy) != 0:
     print('TOTAL MONEY SPENT: {}'.format(totalMoneyinStocks))
     time.sleep(60)
 
-    # while int(datetime.now().hour) < timeToSell:
-    for x in range(1):
-        print("-------------------------------")
-        print("Time: {}".format(datetime.now()))
-        print("-------------------------------")
-        tStocks = []
-        tTrades = []
-        for stock in stocksToBuy:
-            try:
-                dat, mData = ts.get_intraday(stock.ticker)
-                stockPriceNow = dat['4. close'][-1]
-                print("Bought {} at ${}; Now ${}".format(stock.name, stock.price, stockPriceNow))
-                if isFibSmaOk(stock.ticker) == False:
-                    totPriceStock = numStocks * float(stock.price)
-                    totalMoney = totalMoney + totPriceStock
-                    totalMoneyinStocks = totalMoneyinStocks - totPriceStock
-                    print("Removed {} because 5-8-13 bar SMA is not acceptable".format(stock.name))
-                else:
-                    tStocks.append(stock)
-                    for trade in trades:
-                        if trade.stock.name == stock.name:
-                            tTrades.append(trade)
-                            break
-                time.sleep(60)
-            except:
-                print("Error getting data for {}: Time Series call".format(stock.name))
-        stocksToBuy = tStocks
-        trades = tTrades
+    while int(datetime.now().hour) < timeToSell:
+        if stocksToBuy:
+            print("-------------------------------")
+            print("Time: {}".format(datetime.now()))
+            print("-------------------------------")
+            tStocks = []
+            tTrades = []
+            for stock in stocksToBuy:
+                try:
+                    dat, mData = ts.get_intraday(stock.ticker)
+                    stockPriceNow = dat['4. close'][0]
+                    print("Bought {} at ${}; Now ${}".format(stock.name, stock.price, stockPriceNow))
+                    if isFibSmaOk(stock.ticker) == False:
+                        totPriceStock = numStocks * float(stock.price)
+                        totalMoney = totalMoney + totPriceStock
+                        totalMoneyinStocks = totalMoneyinStocks - totPriceStock
+                        print("Removed {} because 5-8-13 bar SMA is not acceptable".format(stock.name))
+                    else:
+                        tStocks.append(stock)
+                        for trade in trades:
+                            if trade.stock.name == stock.name:
+                                tTrades.append(trade)
+                                break
+                    time.sleep(60)
+                except:
+                    print("Error getting data for {}: Time Series call".format(stock.name))
+            stocksToBuy = tStocks
+            trades = tTrades
+        else:
+            "No more stocks to watch"
+            break
     #After 4 pm sell all the stocks and get the (hopeful profit)
     print('-----------------')
     print('CLOSING POSITIONS')
@@ -166,8 +169,8 @@ if len(stocksToBuy) != 0:
     time.sleep(60)
     try:
         spyData, metaDeta = ts.get_daily('SPY')
-        spyOpen = spyData["1. open"][-1]
-        spyClose = spyData["4. close"][-1]
+        spyOpen = spyData["1. open"][0]
+        spyClose = spyData["4. close"][0]
         spyPercentChange = (spyClose - spyOpen) / spyOpen * 100
         print("-----------------------------------")
         print("S&P 500 Details: ")
