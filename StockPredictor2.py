@@ -22,12 +22,6 @@ timeToSell = 16
 #Create a new file that will hold data
 file = open("stocks.txt","w+")
 
-file.write("value1")
-file.write("\n")
-file.write("value2")
-
-file.close()
-
 ts = TimeSeries(key=alphaVantageKey, output_format='pandas')
 ti = TechIndicators(key=alphaVantageKey, output_format='pandas')
 
@@ -83,18 +77,21 @@ for stock in tempStocks:
         time.sleep(60)
 
 #Remove stocks that aren't compatible with Alpha Vantage Time Series call
+
 if len(stocksToBuy) != 0:
+    tstock = []
     time.sleep(60)
     count = 0
     for stock in stocksToBuy:
         count = count + 1
         try:
             ts.get_intraday(stock.ticker)
+            tstock.append(stock)
         except:
-            print("{} had to be removed from list of bought stocks because Alpha Vantage doesn't have data for it".format(stock.name))
-            stocksToBuy.remove(stock)
+            print("{} had to be removed from list of bought stocks because Alpha Vantage doesn't have data for it".format(stock.name))            
         if count % 5 == 0:
             time.sleep(60)
+    stocksToBuy = tstock
 
 #Buy the stocks and show the price of the stocks
 if len(stocksToBuy) != 0:
@@ -114,6 +111,8 @@ if len(stocksToBuy) != 0:
         print("{} shares of {}, ticker : {}, at price : {}".format(numStocks, stock.name, stock.ticker, stock.price))
         print('Total amount of money spent on {}: {}'.format(stock.name, totPriceStock))
         print('***********************************')
+        file.write("{} {} {} {} {}".format(stock.name, stock.ticker, stock.price, numStocks, totPriceStock))
+        file.write("\n")
     print('TOTAL MONEY SPENT: {}'.format(totalMoneyinStocks))
     time.sleep(60)
 
@@ -200,3 +199,5 @@ if len(stocksToBuy) != 0:
     print("Market Percent change (SPY): {}%".format(round(spyPercentChange, 2)))
 else:
     print('Time Series call didnt have any of the chosen stocks. Program finished.')
+
+file.close()
