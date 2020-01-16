@@ -28,8 +28,6 @@ file.write("value2")
 
 file.close()
 
-time.sleep(60)
-
 ts = TimeSeries(key=alphaVantageKey, output_format='pandas')
 ti = TechIndicators(key=alphaVantageKey, output_format='pandas')
 
@@ -44,9 +42,16 @@ def scrapeYahooData():
     name = row.find_element_by_xpath('td[@aria-label="Name"]')
     ticker = row.find_element_by_xpath('td/a[@class="Fw(600)"]')
     percentChange = row.find_element_by_xpath('td[@aria-label="% Change"]')
-    price = row.find_element_by_xpath('td/span[@class="Trsdu(0.3s) "]')
-    stock = StockInfo(name.text, ticker.text, percentChange.text, price.text)
-    stocks.append(stock)
+    try:
+        price = row.find_element_by_xpath('td/span[@class="Trsdu(0.3s) "]')
+        price = float(price.text)
+        print(name.text)
+        print(price)
+        stock = StockInfo(name.text, ticker.text, percentChange.text, price)
+        stocks.append(stock)
+    except:
+        print("price didn't come back as us money")
+    
 
 stockData = driver.find_element_by_xpath('//*[@class="W(100%)"]/tbody')
 for row in stockData.find_elements_by_tag_name('tr'):
@@ -54,8 +59,6 @@ for row in stockData.find_elements_by_tag_name('tr'):
 driver.close()
 
 for stock in stocks:
-    print(stock.ticker)
-    print("-------------------")
     try:
         if isFibSmaOk(stock.ticker):
             tempStocks.append(stock)
@@ -71,7 +74,7 @@ stocksToBuy = []
 count = 0
 for stock in tempStocks:
     try:
-        if isRsiOk(stock.ticker, 60):
+        if isRsiOk(stock.ticker, 80):
             stocksToBuy.append(stock)
     except:
         print("Error getting RSI for {}, {}".format(stock.name, stock.ticker))
@@ -102,8 +105,8 @@ if len(stocksToBuy) != 0:
     print('***********************************')
 
     for stock in stocksToBuy:
-        numStocks = int(splitMoney / float(stock.price))
-        totPriceStock = numStocks * float(stock.price)
+        numStocks = int(splitMoney / stock.price)
+        totPriceStock = numStocks * stock.price
         totalMoney = totalMoney - totPriceStock
         totalMoneyinStocks = totalMoneyinStocks + totPriceStock
         trade = TradeDetails(stock, numStocks, totPriceStock)
@@ -125,6 +128,7 @@ if len(stocksToBuy) != 0:
                 try:
                     dat, mData = ts.get_intraday(stock.ticker)
                     stockPriceNow = dat['4. close'][0]
+                    print(dat)
                     print("Bought {} at ${}; Now ${}".format(stock.name, stock.price, stockPriceNow))
                     if isFibSmaOk(stock.ticker) == False:
                         totPriceStock = numStocks * float(stock.price)
@@ -137,9 +141,10 @@ if len(stocksToBuy) != 0:
                             if trade.stock.name == stock.name:
                                 tTrades.append(trade)
                                 break
-                    time.sleep(60)
+                    
                 except:
                     print("Error getting data for {}: Time Series call".format(stock.name))
+                time.sleep(60)
             stocksToBuy = tStocks
             trades = tTrades
         else:
@@ -156,6 +161,7 @@ if len(stocksToBuy) != 0:
         try:
             dat, mData = ts.get_intraday(trade.stock.ticker)
             stockClosingPrice = dat['4. close'][0]
+            print(dat)
             print("STOCK: {}".format(trade.stock.name))
             print("Stock price bought: {}".format(trade.stock.price))
             print("Stock closing price: {}".format(stockClosingPrice))
