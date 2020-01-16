@@ -15,12 +15,12 @@ alphaVantageKey = 'Q4A5RYR91VTSMIGK'
 beginningMoney = 10000
 totalMoney = 10000
 totalMoneyinStocks = 0
-webDriverPath = '/Users/ctsuser/Desktop/chromedriver'
+webDriverPath = '/Users/Jferlic/Desktop/ChromeDriver/chromedriver'
 websiteForDataScraping = 'https://finance.yahoo.com/gainers'
 timeToSell = 16
 
 #Create a new file that will hold data
-file = open("stocks.txt","w+")
+initialStocksBoughtFile = open("stocks.txt","w+")
 
 ts = TimeSeries(key=alphaVantageKey, output_format='pandas')
 ti = TechIndicators(key=alphaVantageKey, output_format='pandas')
@@ -111,14 +111,17 @@ if len(stocksToBuy) != 0:
         print("{} shares of {}, ticker : {}, at price : {}".format(numStocks, stock.name, stock.ticker, stock.price))
         print('Total amount of money spent on {}: {}'.format(stock.name, totPriceStock))
         print('***********************************')
-        file.write("{} {} {} {} {}".format(stock.name, stock.ticker, stock.price, numStocks, totPriceStock))
-        file.write("\n")
-    file.close()
+        initialStocksBoughtFile.write("{},{},{},{},{}".format(stock.name, stock.ticker, stock.price, numStocks, totPriceStock))
+        initialStocksBoughtFile.write("\n")
+    initialStocksBoughtFile.close()
     print('TOTAL MONEY SPENT: {}'.format(totalMoneyinStocks))
     time.sleep(60)
 
+    
     while int(datetime.now().hour) < timeToSell:
+        
         if stocksToBuy:
+            stocksSoldDetails = open("stocksSold.txt","a+")
             print("-------------------------------")
             print("Time: {}".format(datetime.now()))
             print("-------------------------------")
@@ -128,13 +131,14 @@ if len(stocksToBuy) != 0:
                 try:
                     dat, mData = ts.get_intraday(stock.ticker)
                     stockPriceNow = dat['4. close'][0]
-                    print(dat)
                     print("Bought {} at ${}; Now ${}".format(stock.name, stock.price, stockPriceNow))
                     if isFibSmaOk(stock.ticker) == False:
-                        totPriceStock = numStocks * float(stock.price)
+                        totPriceStock = numStocks * float(stockPriceNow)
                         totalMoney = totalMoney + totPriceStock
                         totalMoneyinStocks = totalMoneyinStocks - totPriceStock
                         print("Removed {} because 5-8-13 bar SMA is not acceptable".format(stock.name))
+                        stocksSoldDetails.write("{},{},{},{},{},{}".format(datetime.now(), stock.name, stock.ticker, stock.price, stockPriceNow, numStocks))
+                        stocksSoldDetails.write("\n")
                     else:
                         tStocks.append(stock)
                         for trade in trades:
@@ -147,15 +151,18 @@ if len(stocksToBuy) != 0:
                 time.sleep(60)
             stocksToBuy = tStocks
             trades = tTrades
+            stocksSoldDetails.close()
         else:
             "No more stocks to watch"
             break
+    
     #After 4 pm sell all the stocks and get the (hopeful profit)
     print('-----------------')
     print('CLOSING POSITIONS')
     print('-----------------')
     totalStockDiff = 0
     count = 0
+    closingPositionsText = open("closingPositions.txt", "w+")
     for trade in trades:
         count = count + 1
         try:
@@ -166,11 +173,13 @@ if len(stocksToBuy) != 0:
             print("Stock price bought: {}".format(trade.stock.price))
             print("Stock closing price: {}".format(stockClosingPrice))
             print("Number of stocks bought: {}".format(trade.numStocksBought))
+            closingPositionsText.write("{},{},{},{}".format(trade.stock.name, trade.stock.price, stockClosingPrice, trade.numStocksBought))
             totalStockDiff = totalStockDiff + ((float(stockClosingPrice) - float(trade.stock.price)) * trade.numStocksBought) 
         except:
             print("Error getting data for {} : Time Series call".format(stock.name))
         if count % 5 == 0:
             time.sleep(60)
+    closingPositionsText.close()
     spyPercentChange = 0
     time.sleep(60)
     try:
@@ -200,7 +209,5 @@ if len(stocksToBuy) != 0:
     print("Market Percent change (SPY): {}%".format(round(spyPercentChange, 2)))
 else:
     print('Time Series call didnt have any of the chosen stocks. Program finished.')
-
-
 
 print("PROGRAM DONE")
