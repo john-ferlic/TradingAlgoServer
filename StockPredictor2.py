@@ -174,6 +174,7 @@ if len(stocksToBuy) != 0:
             print("Stock closing price: {}".format(stockClosingPrice))
             print("Number of stocks bought: {}".format(trade.numStocksBought))
             closingPositionsText.write("{},{},{},{}".format(trade.stock.name, trade.stock.price, stockClosingPrice, trade.numStocksBought))
+            closingPositionsText.write("\n")
             totalStockDiff = totalStockDiff + ((float(stockClosingPrice) - float(trade.stock.price)) * trade.numStocksBought) 
         except:
             print("Error getting data for {} : Time Series call".format(stock.name))
@@ -202,6 +203,10 @@ if len(stocksToBuy) != 0:
 
     totalMoneyToEnd = totalMoney + totalStockDiff + totalMoneyinStocks
     totalPercentChange = (totalMoneyToEnd - beginningMoney) / beginningMoney * 100
+    finalResultsText = open("finalResults.txt", "w+")
+    finalResultsText.write("{},{},{},{},{},{}".format(beginningMoney, totalMoneyToEnd, totalPercentChange, spyOpen, spyClose, spyPercentChange))
+    finalResultsText.write("\n")
+    finalResultsText.close()
     print('----------------')
     print('    RESULTS     ')
     print('----------------')
