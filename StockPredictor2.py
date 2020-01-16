@@ -15,7 +15,7 @@ alphaVantageKey = 'Q4A5RYR91VTSMIGK'
 beginningMoney = 10000
 totalMoney = 10000
 totalMoneyinStocks = 0
-webDriverPath = '/Users/Jferlic/Desktop/ChromeDriver/chromedriver'
+webDriverPath = '/Users/ctsuser/Desktop/chromedriver'
 websiteForDataScraping = 'https://finance.yahoo.com/gainers'
 timeToSell = 16
 
@@ -113,6 +113,7 @@ if len(stocksToBuy) != 0:
         print('***********************************')
         file.write("{} {} {} {} {}".format(stock.name, stock.ticker, stock.price, numStocks, totPriceStock))
         file.write("\n")
+    file.close()
     print('TOTAL MONEY SPENT: {}'.format(totalMoneyinStocks))
     time.sleep(60)
 
@@ -200,6 +201,6 @@ if len(stocksToBuy) != 0:
 else:
     print('Time Series call didnt have any of the chosen stocks. Program finished.')
 
-file.close()
+
 
 print("PROGRAM DONE")
