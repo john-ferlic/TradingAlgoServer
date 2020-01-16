@@ -201,3 +201,5 @@ else:
     print('Time Series call didnt have any of the chosen stocks. Program finished.')
 
 file.close()
+
+print("PROGRAM DONE")
