@@ -1,0 +1,10 @@
+Forty Seven, Inc.,FTSV,46.09,21,967.8900000000001
+Tellurian Inc.,TELL,8.6,116,997.5999999999999
+Norbord Inc.,OSB,30.59,32,978.88
+NIO Limited,NIO,4.655,214,996.1700000000001
+Sibanye Gold Limited,SBGL,10.89,91,990.99
+Karuna Therapeutics, Inc.,KRTX,101.43,9,912.8700000000001
+ChemoCentryx, Inc.,CCXI,43.19,23,993.3699999999999
+Biohaven Pharmaceutical Holding Company Ltd.,BHVN,54.38,18,978.84
+State Street Corporation,STT,84.9,11,933.9000000000001
+Telecom Argentina S.A.,TEO,11.65,85,990.25

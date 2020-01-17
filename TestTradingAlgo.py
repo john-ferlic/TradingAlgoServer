@@ -17,16 +17,16 @@ def isFibSmaOk(ticker):
         smaValues.append(sma)
     #Check to see if sma for 8-bar is greater than 13-bar and if 5-bar is greater than 8-bar
     if hasSMA:
-        if smaValues[1] > smaValues[2]:
-            if smaValues[0] > smaValues[1]:
-                print("BUY")
-                return True
-            else:
-                print("DON'T BUY")
+        if smaValues[1] < smaValues[2]:
+            if smaValues[0] < smaValues[1]:
+                print("Don't Buy")
                 return False
+            else:
+                print("BUY/Hold")
+                return True
         else:
-            print("DON'T BUY")
-            return False
+            print("BUY/Hold")
+            return True
 
 def isRsiOk(ticker, thresholdRsi):
     data, metaData = ti.get_rsi(ticker)
