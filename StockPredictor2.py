@@ -130,7 +130,7 @@ if len(stocksToBuy) != 0:
             for stock in stocksToBuy:
                 try:
                     dat, mData = ts.get_intraday(stock.ticker)
-                    stockPriceNow = dat['4. close'][0]
+                    stockPriceNow = dat['4. close'][-1]
                     print("Bought {} at ${}; Now ${}".format(stock.name, stock.price, stockPriceNow))
                     if isFibSmaOk(stock.ticker) == False:
                         totPriceStock = numStocks * float(stockPriceNow)
@@ -167,7 +167,7 @@ if len(stocksToBuy) != 0:
         count = count + 1
         try:
             dat, mData = ts.get_intraday(trade.stock.ticker)
-            stockClosingPrice = dat['4. close'][0]
+            stockClosingPrice = dat['4. close'][-1]
             print(dat)
             print("STOCK: {}".format(trade.stock.name))
             print("Stock price bought: {}".format(trade.stock.price))
