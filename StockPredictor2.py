@@ -8,7 +8,8 @@ from StockInfo import StockInfo
 from StockInfo import TradeDetails
 from datetime import datetime
 import time
-from TestTradingAlgo import isFibSmaOk
+from TestTradingAlgo import buyOnFibSma
+from TestTradingAlgo import sellOnFibSma
 from TestTradingAlgo import isRsiOk
 
 alphaVantageKey = 'Q4A5RYR91VTSMIGK'
@@ -54,7 +55,7 @@ driver.close()
 
 for stock in stocks:
     try:
-        if isFibSmaOk(stock.ticker):
+        if buyOnFibSma(stock.ticker):
             tempStocks.append(stock)
     except:
         print("Error getting SMA for {}, {}".format(stock.name, stock.ticker))
@@ -68,7 +69,7 @@ stocksToBuy = []
 count = 0
 for stock in tempStocks:
     try:
-        if isRsiOk(stock.ticker, 80):
+        if isRsiOk(stock.ticker, 70):
             stocksToBuy.append(stock)
     except:
         print("Error getting RSI for {}, {}".format(stock.name, stock.ticker))
@@ -111,7 +112,7 @@ if len(stocksToBuy) != 0:
         print("{} shares of {}, ticker : {}, at price : {}".format(numStocks, stock.name, stock.ticker, stock.price))
         print('Total amount of money spent on {}: {}'.format(stock.name, totPriceStock))
         print('***********************************')
-        initialStocksBoughtFile.write("{},{},{},{},{}".format(stock.name, stock.ticker, stock.price, numStocks, totPriceStock))
+        initialStocksBoughtFile.write("{}%{}%{}%{}%{}".format(stock.name, stock.ticker, stock.price, numStocks, totPriceStock))
         initialStocksBoughtFile.write("\n")
     initialStocksBoughtFile.close()
     print('TOTAL MONEY SPENT: {}'.format(totalMoneyinStocks))
@@ -132,12 +133,12 @@ if len(stocksToBuy) != 0:
                     dat, mData = ts.get_intraday(stock.ticker)
                     stockPriceNow = dat['4. close'][-1]
                     print("Bought {} at ${}; Now ${}".format(stock.name, stock.price, stockPriceNow))
-                    if isFibSmaOk(stock.ticker) == False:
+                    if sellOnFibSma(stock.ticker):
                         totPriceStock = numStocks * float(stockPriceNow)
                         totalMoney = totalMoney + totPriceStock
                         totalMoneyinStocks = totalMoneyinStocks - totPriceStock
                         print("Removed {} because 5-8-13 bar SMA is not acceptable".format(stock.name))
-                        stocksSoldDetails.write("{},{},{},{},{},{}".format(datetime.now(), stock.name, stock.ticker, stock.price, stockPriceNow, numStocks))
+                        stocksSoldDetails.write("{}%{}%{}%{}%{}%{}".format(datetime.now(), stock.name, stock.ticker, stock.price, stockPriceNow, numStocks))
                         stocksSoldDetails.write("\n")
                     else:
                         tStocks.append(stock)
@@ -168,12 +169,11 @@ if len(stocksToBuy) != 0:
         try:
             dat, mData = ts.get_intraday(trade.stock.ticker)
             stockClosingPrice = dat['4. close'][-1]
-            print(dat)
             print("STOCK: {}".format(trade.stock.name))
             print("Stock price bought: {}".format(trade.stock.price))
             print("Stock closing price: {}".format(stockClosingPrice))
             print("Number of stocks bought: {}".format(trade.numStocksBought))
-            closingPositionsText.write("{},{},{},{}".format(trade.stock.name, trade.stock.price, stockClosingPrice, trade.numStocksBought))
+            closingPositionsText.write("{}%{}%{}%{}".format(trade.stock.name, trade.stock.price, stockClosingPrice, trade.numStocksBought))
             closingPositionsText.write("\n")
             totalStockDiff = totalStockDiff + ((float(stockClosingPrice) - float(trade.stock.price)) * trade.numStocksBought) 
         except:
@@ -185,8 +185,8 @@ if len(stocksToBuy) != 0:
     time.sleep(60)
     try:
         spyData, metaDeta = ts.get_daily('SPY')
-        spyOpen = spyData["1. open"][0]
-        spyClose = spyData["4. close"][0]
+        spyOpen = spyData["1. open"][-1]
+        spyClose = spyData["4. close"][-1]
         spyPercentChange = (spyClose - spyOpen) / spyOpen * 100
         print("-----------------------------------")
         print("S&P 500 Details: ")
@@ -204,7 +204,7 @@ if len(stocksToBuy) != 0:
     totalMoneyToEnd = totalMoney + totalStockDiff + totalMoneyinStocks
     totalPercentChange = (totalMoneyToEnd - beginningMoney) / beginningMoney * 100
     finalResultsText = open("finalResults.txt", "w+")
-    finalResultsText.write("{},{},{},{},{},{}".format(beginningMoney, totalMoneyToEnd, totalPercentChange, spyOpen, spyClose, spyPercentChange))
+    finalResultsText.write("{}%{}%{}%{}%{}%{}".format(beginningMoney, totalMoneyToEnd, totalPercentChange, spyOpen, spyClose, spyPercentChange))
     finalResultsText.write("\n")
     finalResultsText.close()
     print('----------------')

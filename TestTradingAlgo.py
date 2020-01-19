@@ -4,7 +4,7 @@ import time
 alphaVantageKey = 'Q4A5RYR91VTSMIGK'
 ti = TechIndicators(key=alphaVantageKey, output_format='pandas')
 
-def isFibSmaOk(ticker):
+def buyOnFibSma(ticker):
     bars = [5,8,13]
     smaValues = []
     hasSMA = True
@@ -26,6 +26,30 @@ def isFibSmaOk(ticker):
                 return False
         else:
             print("DON'T BUY")
+            return False
+
+def sellOnFibSma(ticker):
+    bars = [5,8,13]
+    smaValues = []
+    hasSMA = True
+    print("***************       {}       ****************".format(ticker))
+    for i in range(0,3):
+        data, metadata = ti.get_sma(symbol=ticker, interval='30min', time_period=bars[i])
+        reversedData = data.iloc[::-1]
+        sma = reversedData["SMA"][0]
+        print("The SMA for the last {} data points is: {} ".format(bars[i], sma))
+        smaValues.append(sma)
+    #Check to see if sma for 8-bar is greater than 13-bar and if 5-bar is greater than 8-bar
+    if hasSMA:
+        if smaValues[1] < smaValues[2]:
+            if smaValues[0] < smaValues[1]:
+                print("SELL")
+                return True
+            else:
+                print("DON'T SELL")
+                return False
+        else:
+            print("DON'T SELL")
             return False
 
 def isRsiOk(ticker, thresholdRsi):
