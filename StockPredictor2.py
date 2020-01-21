@@ -205,7 +205,6 @@ if len(stocksToBuy) != 0:
     totalPercentChange = (totalMoneyToEnd - beginningMoney) / beginningMoney * 100
     finalResultsText = open("finalResults.txt", "w+")
     finalResultsText.write("{}%{}%{}%{}%{}%{}".format(beginningMoney, totalMoneyToEnd, totalPercentChange, spyOpen, spyClose, spyPercentChange))
-    finalResultsText.write("\n")
     finalResultsText.close()
     print('----------------')
     print('    RESULTS     ')

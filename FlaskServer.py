@@ -18,7 +18,7 @@ def stocksBought():
             "ticker": info[1],
             "price": info[2],
             "numStocks": info[3],
-            "totStockPrice": info[4]
+            "totStockPrice": info[4].rstrip()
         }
         stocksBought.append(infoDict)
     return json.dumps(stocksBought)
@@ -36,7 +36,7 @@ def stocksSold():
             "ticker": info[2],
             "priceBought": info[3],
             "priceNow": info[4],
-            "numStocksBought": info[5]
+            "numStocksBought": info[5].rstrip()
         }
         stocksSold.append(infoDict)
     return json.dumps(stocksSold)
@@ -52,7 +52,7 @@ def closingPosition():
             "name": info[0],
             "priceBought": info[1],
             "stockClosingPrice": info[2],
-            "numStocks": info[3],
+            "numStocks": info[3].rstrip()
         }
         stocks.append(infoDict)
     return json.dumps(stocks)
