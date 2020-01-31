@@ -34,8 +34,8 @@ def stocksSold():
             "timeSold": info[0],
             "name": info[1],
             "ticker": info[2],
-            "priceBought": info[3],
-            "priceNow": info[4],
+            "priceBought": round(float(info[3]), 2),
+            "priceNow": round(float(info[4]), 2),
             "numStocksBought": info[5].rstrip()
         }
         stocksSold.append(infoDict)
@@ -64,11 +64,11 @@ def results():
     info = contents.split("%")
     infoDict = {
         "beginningAmountOfMoney": info[0],
-        "totMoneyToEnd": info[1],
-        "percentageChange": info[2],
+        "totMoneyToEnd": round(float(info[1]), 2),
+        "percentageChange": round(float(info[2]), 2),
         "spyOpen": info[3],
         "spyClose": info[4],
-        "spyPercentageChange": info[5]
+        "spyPercentageChange": round(float(info[5]), 2)
     }
     return json.dumps(infoDict)
         

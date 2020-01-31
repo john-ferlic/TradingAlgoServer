@@ -34,7 +34,7 @@ def sellOnFibSma(ticker):
     hasSMA = True
     print("***************       {}       ****************".format(ticker))
     for i in range(0,3):
-        data, metadata = ti.get_sma(symbol=ticker, interval='30min', time_period=bars[i])
+        data, metadata = ti.get_sma(symbol=ticker, interval='15min', time_period=bars[i])
         reversedData = data.iloc[::-1]
         sma = reversedData["SMA"][0]
         print("The SMA for the last {} data points is: {} ".format(bars[i], sma))

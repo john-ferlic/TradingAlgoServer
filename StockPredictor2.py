@@ -13,8 +13,8 @@ from TestTradingAlgo import sellOnFibSma
 from TestTradingAlgo import isRsiOk
 
 alphaVantageKey = 'Q4A5RYR91VTSMIGK'
-beginningMoney = 10000
-totalMoney = 10000
+beginningMoney = 10160.58
+totalMoney = 10160.58
 totalMoneyinStocks = 0
 webDriverPath = '/Users/Jferlic/Desktop/ChromeDriver/chromedriver'
 websiteForDataScraping = 'https://finance.yahoo.com/gainers'
@@ -29,6 +29,16 @@ ti = TechIndicators(key=alphaVantageKey, output_format='pandas')
 stocks = []
 tempStocks = []
 trades = []
+
+#Clear stocks sold text file
+stocksSoldDetails = open("stocksSold.txt","w+")
+stocksSoldDetails.close()
+
+#Wait until 10:00 to begin the program
+while int(datetime.now().hour) > 10:
+    print(datetime.now())
+    time.sleep(300)
+
 
 driver = webdriver.Chrome(executable_path=webDriverPath)
 driver.get(websiteForDataScraping)
@@ -78,7 +88,6 @@ for stock in tempStocks:
         time.sleep(60)
 
 #Remove stocks that aren't compatible with Alpha Vantage Time Series call
-
 if len(stocksToBuy) != 0:
     tstock = []
     time.sleep(60)
@@ -107,6 +116,8 @@ if len(stocksToBuy) != 0:
         totPriceStock = numStocks * stock.price
         totalMoney = totalMoney - totPriceStock
         totalMoneyinStocks = totalMoneyinStocks + totPriceStock
+        print(totalMoneyinStocks)
+        print(totalMoney)
         trade = TradeDetails(stock, numStocks, totPriceStock)
         trades.append(trade)
         print("{} shares of {}, ticker : {}, at price : {}".format(numStocks, stock.name, stock.ticker, stock.price))
@@ -118,9 +129,7 @@ if len(stocksToBuy) != 0:
     print('TOTAL MONEY SPENT: {}'.format(totalMoneyinStocks))
     time.sleep(60)
 
-    
-    while int(datetime.now().hour) < timeToSell:
-        
+    while int(datetime.now().hour) < timeToSell:  
         if stocksToBuy:
             stocksSoldDetails = open("stocksSold.txt","a+")
             print("-------------------------------")
@@ -134,10 +143,17 @@ if len(stocksToBuy) != 0:
                     stockPriceNow = dat['4. close'][-1]
                     print("Bought {} at ${}; Now ${}".format(stock.name, stock.price, stockPriceNow))
                     if sellOnFibSma(stock.ticker):
-                        totPriceStock = numStocks * float(stockPriceNow)
+                        numStock = 0
+                        for trade in trades:
+                            if trade.stock.name == stock.name:
+                                numStock = trade.numStocksBought
+                                break
+                        totPriceStock = numStock * float(stockPriceNow)
                         totalMoney = totalMoney + totPriceStock
                         totalMoneyinStocks = totalMoneyinStocks - totPriceStock
-                        print("Removed {} because 5-8-13 bar SMA is not acceptable".format(stock.name))
+                        print(totPriceStock)
+                        print(totalMoney)
+                        print(totalMoneyinStocks)
                         stocksSoldDetails.write("{}%{}%{}%{}%{}%{}".format(datetime.now(), stock.name, stock.ticker, stock.price, stockPriceNow, numStocks))
                         stocksSoldDetails.write("\n")
                     else:
@@ -149,7 +165,7 @@ if len(stocksToBuy) != 0:
                     
                 except:
                     print("Error getting data for {}: Time Series call".format(stock.name))
-                time.sleep(60)
+                time.sleep(180)
             stocksToBuy = tStocks
             trades = tTrades
             stocksSoldDetails.close()
@@ -164,6 +180,7 @@ if len(stocksToBuy) != 0:
     totalStockDiff = 0
     count = 0
     closingPositionsText = open("closingPositions.txt", "w+")
+    print("NUMBER OF TRADES TO CLOSE: {}".format(len(trades)))
     for trade in trades:
         count = count + 1
         try:
@@ -196,7 +213,6 @@ if len(stocksToBuy) != 0:
         print("-----------------------------------")
     except:
         print("Error getting data for SPY Time Series call.")
-
     print("Cash: {}".format(totalMoney))
     print("Diff in Stock: {}".format(totalStockDiff))
     print("Stocks: {}".format(totalMoneyinStocks))

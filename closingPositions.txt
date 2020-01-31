@@ -1,11 +1,5 @@
-Electricite de France S.A.%2.42%2.42%375
-Principia Biopharma Inc.%63.13%63.13%14
-Lattice Semiconductor Corporation%23.34%23.34%38
-Cyrela Brazil Realty S.A. Empreendimentos e Participacoes%8.31%8.31%109
-Tellurian Inc.%8.69%8.68%104
-Karuna Therapeutics, Inc.%104.52%104.53%8
-Biohaven Pharmaceutical Holding Company Ltd.%56.01%56.0%16
-Telecom Argentina S.A.%11.99%11.98%75
-CEMEX, S.A.B. de C.V.%4.21%4.21%215
-Clarivate Analytics Plc%18.9%18.9%48
-ZTE Corporation%3.79%3.79%239
+Mondelez International, Inc.%57.56%58.8%13
+SEI Investments Company%65.93%67.13%11
+Datadog, Inc.%45.72%46.96%17
+Archer-Daniels-Midland Company%45.51%45.8%17
+Franklin Resources, Inc.%25.8%26.2%30
