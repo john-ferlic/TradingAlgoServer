@@ -13,8 +13,8 @@ from TestTradingAlgo import sellOnFibSma
 from TestTradingAlgo import isRsiOk
 
 alphaVantageKey = 'Q4A5RYR91VTSMIGK'
-beginningMoney = 10160.58
-totalMoney = 10160.58
+beginningMoney = 10000
+totalMoney = 10000
 totalMoneyinStocks = 0
 webDriverPath = '/Users/Jferlic/Desktop/ChromeDriver/chromedriver'
 websiteForDataScraping = 'https://finance.yahoo.com/gainers'
@@ -35,7 +35,7 @@ stocksSoldDetails = open("stocksSold.txt","w+")
 stocksSoldDetails.close()
 
 #Wait until 10:00 to begin the program
-while int(datetime.now().hour) > 10:
+while int(datetime.now().hour) < 10:
     print(datetime.now())
     time.sleep(300)
 
@@ -144,13 +144,16 @@ if len(stocksToBuy) != 0:
                     print("Bought {} at ${}; Now ${}".format(stock.name, stock.price, stockPriceNow))
                     if sellOnFibSma(stock.ticker):
                         numStock = 0
+                        totPrice = 0
                         for trade in trades:
                             if trade.stock.name == stock.name:
                                 numStock = trade.numStocksBought
+                                totPrice = trade.totalPrice
                                 break
-                        totPriceStock = numStock * float(stockPriceNow)
+                        #totPriceStock = numStock * float(stockPriceNow)
+                        stockDiff = totPriceStock - totPrice
                         totalMoney = totalMoney + totPriceStock
-                        totalMoneyinStocks = totalMoneyinStocks - totPriceStock
+                        totalMoneyinStocks = totalMoneyinStocks - totPrice
                         print(totPriceStock)
                         print(totalMoney)
                         print(totalMoneyinStocks)
