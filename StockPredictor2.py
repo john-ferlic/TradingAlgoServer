@@ -150,14 +150,14 @@ if len(stocksToBuy) != 0:
                                 numStock = trade.numStocksBought
                                 totPrice = trade.totalPrice
                                 break
-                        #totPriceStock = numStock * float(stockPriceNow)
+                        totPriceStock = numStock * float(stockPriceNow)
                         stockDiff = totPriceStock - totPrice
                         totalMoney = totalMoney + totPriceStock
                         totalMoneyinStocks = totalMoneyinStocks - totPrice
                         print(totPriceStock)
                         print(totalMoney)
                         print(totalMoneyinStocks)
-                        stocksSoldDetails.write("{}%{}%{}%{}%{}%{}".format(datetime.now(), stock.name, stock.ticker, stock.price, stockPriceNow, numStocks))
+                        stocksSoldDetails.write("{}%{}%{}%{}%{}%{}".format(datetime.now().strftime('%H:%M'), stock.name, stock.ticker, stock.price, stockPriceNow, numStocks))
                         stocksSoldDetails.write("\n")
                     else:
                         tStocks.append(stock)

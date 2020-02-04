@@ -3,8 +3,29 @@
 
 from flask import Flask
 import json
+from flask import request
 
 app = Flask(__name__)
+
+@app.route('/login/', methods=["POST"])
+def login():
+    print("hi")
+    file = open("login.txt", "r")
+    info = file.readline().split("%")
+    username = info[0]
+    password = info[1]
+    print(username, password)
+    if request.method == "POST":
+        attempted_username = request.form['username']
+        attempted_password = request.form['password']
+        if attempted_username == username:
+            if attempted_password == password:
+                print("YES")
+                return json.dumps({"status": "success"})
+            else:
+                return json.dumps({"status": "failure"}), 401
+        else:
+            return json.dumps({"status": "failure"}), 401
 
 @app.route("/stocksBought")
 def stocksBought():
